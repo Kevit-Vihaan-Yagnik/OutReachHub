@@ -20,4 +20,4 @@ const campaignSchema = mongoose.Schema({
     endDate: { type: Date, required: true },
 })
 
-model.exports = mongoose.model('Campaign' , campaignSchema);
+module.exports = mongoose.model('Campaign' , campaignSchema);

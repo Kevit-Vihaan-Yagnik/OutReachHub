@@ -5,12 +5,21 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv').config({debug:true});
-
+const userRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin')
+const workspaceRoutes =require('./routes/workspace')
 mongoose.connect(process.env.mango_URL)
     
 mongoose.Promise = global.Promise;
 
 app.use(bodyParser.urlencoded({ extended: true }))
+
+app.use(express.json())
+
+app.use("/user" , userRoutes);
+app.use("/admin" , adminRoutes);
+app.use("/workspace" , workspaceRoutes);
+
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", '*');
@@ -22,8 +31,9 @@ app.use((req, res, next) => {
         res.header("Access-Control-Allow-Methods" , 'PUT , POST , PATCH , DELETE , GET');
         return res.status(200).json({});
     }
-    next()
+    next()  
 })
+
 
 module.exports = app;
 

@@ -5,6 +5,7 @@ const workspaceSchema = new mongoose.Schema({
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
     name: { type: String, required: true },
     memCount: { type: Number, default: 1 },
+    description : { type: String, default: "" },
     members: [
         {
             user_id: mongoose.Schema.Types.ObjectId,

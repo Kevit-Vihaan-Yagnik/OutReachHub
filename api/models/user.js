@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
                 /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
         },
     },
-    workspaces: { type: [mongoose.Schema.Types.ObjectId], ref: "Workspace" },
+    workspaces: { type: [mongoose.Schema.Types.ObjectId], ref: "Workspace" , default : []},
     joinDate: { type: Date, default: Date.now },
 });
 

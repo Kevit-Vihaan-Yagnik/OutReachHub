@@ -27,7 +27,7 @@ const contactSchema = new mongoose.Schema({
     },
     company: { type: String, required: true },
     jobTitle: { type: String, required: true },
-    tags: { type: [mongoose.Schema.Types.ObjectId], ref: "Tag" },
+    tags: { type: [String], default : [] },
 });
 
 module.exports = mongoose.model('Contact', contactSchema);

@@ -18,4 +18,4 @@ const adminSchema = mongoose.Schema({
     joinDate: { type: Date, default: Date.now },
 })
 
-model.exports = mongoose.model('Admin' ,adminSchema);
+module.exports = mongoose.model('Admin' ,adminSchema);
