@@ -33,9 +33,6 @@
                     <option value="Name">Name</option>
                     <option value="Tags">Tags</option>
                     <option value="Phone">Phone</option>
-                    <option value="Email">Email</option>
-                    <option value="Job Title">Job Title</option>
-                    <option value="Workspace">Workspace</option>
                 </select>
                 <button type="submit">
                     Search
@@ -48,9 +45,6 @@
                     <form id="contact-form" action="POST">
                         <h2>Add New Contact</h2>
 
-                        <label for="companyContact">Company</label>
-                        <input type="text" id="companyContact" required>
-
                         <label for="nameContact">Name</label>
                         <input type="text" id="nameContact" required>
 
@@ -59,15 +53,6 @@
 
                         <label for="phoneContact">Phone</label>
                         <input type="text" id="phoneContact" required>
-
-                        <label for="emailContact">Email</label>
-                        <input type="text" id="emailContact" required>
-
-                        <label for="jobContact">Job Title</label>
-                        <input type="text" id="jobContact" required>
-
-                        <label for="workspaceContact">Workspace</label>
-                        <input type="text" id="workspaceContact" required>
 
                         <div class="form-actions">
                             <button type="submit" id="saveContact">Save</button>
@@ -82,9 +67,6 @@
                     <form id="contact-form-edit" action="POST">
                         <h2>Edit Contact</h2>
 
-                        <label for="companyContactEdit">Company</label>
-                        <input type="text" id="companyContactEdit" required>
-
                         <label for="nameContactEdit">Name</label>
                         <input type="text" id="nameContactEdit" required>
 
@@ -93,15 +75,6 @@
 
                         <label for="phoneContactEdit">Phone</label>
                         <input type="text" id="phoneContactEdit" required>
-
-                        <label for="emailContactEdit">Email</label>
-                        <input type="text" id="emailContactEdit" required>
-
-                        <label for="jobContactEdit">Job Title</label>
-                        <input type="text" id="jobContactEdit" required>
-
-                        <label for="workspaceContactEdit">Workspace</label>
-                        <input type="text" id="workspaceContactEdit" required>
 
                         <div class="form-actions">
                             <button type="submit" id="editContact">Edit</button>
@@ -116,13 +89,9 @@
         <table id="contact-table" class="table">
             <thead>
                 <tr>
-                    <th>Company</th>
                     <th>Names</th>
                     <th>Tags</th>
                     <th>Phone</th>
-                    <th>Email</th>
-                    <th>Job Title</th>
-                    <th>Workspace</th>
                     <th>Actions</th>
                 </tr>
             </thead>

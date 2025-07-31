@@ -1,10 +1,12 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Message-Template</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <nav>
         <div class="solgan">OutReachHub</div>
@@ -23,12 +25,11 @@
     </nav>
     <main>
         <div class="big">Message Module</div>
-        <form action="POST">
+        <form action="POST" id="messageForm">
             <label for="search">Search for records</label>
             <input type="text" name="" id="search">
             <select name="" id="options">
                 <option value="Name">Name</option>
-                <option value="Type">Type</option>
                 <option value="Workspace">Worksapce</option>
                 <option value="Tags">Tags</option>
             </select>
@@ -36,83 +37,60 @@
                 Search
             </button>
         </form>
-        <button class="add-btn">Add +</button>
+        <button class="add-btn" id="addMessageBtn">Add +</button>
+
+        <!-- Modal -->
+        <div id="messageModal" class="modal">
+            <div class="modal-content">
+                <span id="closeModal" class="close">&times;</span>
+                <h2>Create / Edit Message</h2>
+
+                <!-- Form -->
+                <form id="addForm">
+                    <label>Name</label>
+                    <input type="text" id="msgName" required />
+
+                    <label>Type</label>
+                    <select id="msgType">
+                        <option value="text">Text</option>
+                        <option value="text_image">Text + Image</option>
+                    </select>
+
+                    <label>Content</label>
+                    <textarea id="msgContent" rows="3" required></textarea>
+
+                    <label>Image URL</label>
+                    <input type="url" id="msgImage" placeholder="https://..." />
+
+                    <label>Tags (comma-separated)</label>
+                    <input type="text" id="msgTags" placeholder="promo, sale" />
+
+                    <label>Workspace</label>
+                    <input type="text" id="msgWorkspace" required />
+
+                    <button type="submit">Save</button>
+                </form>
+
+                <h3 style="margin-top: 2rem;">Live Preview</h3>
+                <div id="previewCard" class="card">
+                    <img id="previewImage" src="" alt="Preview Image" class="card-image" />
+                    <div class="card-content">
+                        <h3 id="previewName" class="card-title">Name</h3>
+                        <p class="card-type">Type: <strong id="previewType">text</strong></p>
+                        <p id="previewContent" class="card-text">Content preview</p>
+                        <div id="previewTags" class="chip-group"></div>
+                        <p class="workspace">Workspace: <span id="previewWorkspace">Workspace Name</span></p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <table id="message-table" class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Content</th>
-                    <th>Image_url</th>
-                    <th>Tags</th>
-                    <th>Workspace</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td data-label="Name">Welcome Email</td>
-                    <td data-label="Type">text</td>
-                    <td data-label="Content">Hello {{name}}, welcome to our platform!</td>
-                    <td data-label="Image_url"></td>
-                    <td data-label="Tags">onboarding, welcome</td>
-                    <td data-label="Workspace">North America Sales</td>
-                    <td data-label="Actions">
-                        <button>Edit</button>
-                        <button>Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td data-label="Name">Promo Blast</td>
-                    <td data-label="Type">text_image</td>
-                    <td data-label="Content">Don’t miss our limited-time offer!</td>
-                    <td data-label="Image_url">https://cdn.example.com/images/promo1.png</td>
-                    <td data-label="Tags">promo, sale</td>
-                    <td data-label="Workspace">Marketing Team</td>
-                    <td data-label="Actions">
-                        <button>Edit</button>
-                        <button>Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td data-label="Name">Re-engagement</td>
-                    <td data-label="Type">text</td>
-                    <td data-label="Content">We haven’t seen you in a while. Here’s 10% off!</td>
-                    <td data-label="Image_url"></td>
-                    <td data-label="Tags">inactive, discount</td>
-                    <td data-label="Workspace">Europe Outreach</td>
-                    <td data-label="Actions" class="buttons">
-                        <button>Edit</button>
-                        <button>Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td data-label="Name">New Feature Alert</td>
-                    <td data-label="Type">text_image</td>
-                    <td data-label="Content">Introducing SmartDash: your AI-powered dashboard.</td>
-                    <td data-label="Image_url">https://cdn.example.com/images/smartdash.png</td>
-                    <td data-label="Tags">features, update</td>
-                    <td data-label="Workspace">Product Launch</td>
-                    <td data-label="Actions">
-                        <button>Edit</button>
-                        <button>Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td data-label="Name">Follow-up Reminder</td>
-                    <td data-label="Type">text</td>
-                    <td data-label="Content">Just checking in — did you see our last email?</td>
-                    <td data-label="Image_url"></td>
-                    <td data-label="Tags">follow-up</td>
-                    <td data-label="Workspace">Customer Success</td>
-                    <td data-label="Actions">
-                        <button>Edit</button>
-                        <button>Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+
+
+        </div>
+        <div id="message-cards" class="card-container">
+            
+        </div>
+
     </main>
     <footer>
         <div class="footer">
@@ -122,5 +100,8 @@
         </div>
     </footer>
     <script src="./script.js"></script>
+    <script src="./messageCRUD.js"></script>
+    
 </body>
+
 </html>

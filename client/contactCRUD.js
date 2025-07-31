@@ -1,45 +1,50 @@
+const contactTbody = document.querySelector('#contact-table tbody');
+const contactInput = document.getElementById("searchContact");
+const contactType = document.getElementById("contactOptions");
+const contactForm = document.querySelector("#contactForm");
+
+const modal = document.getElementById('modal');
+const editmodal = document.getElementById('editmodal');
+const addButton = document.getElementById('add-contact');
+const closeBtn = document.getElementById('close-modal');
+const closeModalEdit = document.getElementById('close-modalEdit');
+const addContactForm = document.getElementById('contact-form');
+const editBtn = document.getElementById('editContact');
+
+// 🔁 Fetch Contacts
 async function fetchContacts() {
-    const res = await fetch('https://6874d57add06792b9c95705b.mockapi.io/api/v1/Contact');
+    const res = await fetch('http://localhost:3000/contacts?page=1&limit=10&sortBy=createdAt&sortOrder=asc', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+
     const contacts = await res.json();
+    contactTbody.innerHTML = '';
 
-    contactTbody.innerHTML = ''; // Clear existing
-
-    contacts.forEach(contact => {
+    contacts.data.forEach(contact => {
         const row = document.createElement('tr');
         row.setAttribute('data-id', contact.id);
+
         row.innerHTML = `
-            <td data-label="Company">${contact.Company}</td>
-            <td data-label="Names">${contact.Name}</td>
-            <td data-label="Tags">${contact.Tags}</td>
-            <td data-label="Phone">${contact.Phone}</td>
-            <td data-label="Email">${contact.Email}</td>
-            <td data-label="Job Title">${contact.JobTitle}</td>
-            <td data-label="Workspace">${contact.Workspace}</td>
+            <td data-label="Names">${contact.name}</td>
+            <td data-label="Phone">${contact.phoneNumber}</td>
+            <td data-label="Tags">${contact.tags.join(', ')}</td>
             <td data-label="Actions"><button>Edit</button><button>Delete</button></td>
         `;
+
         contactTbody.appendChild(row);
     });
 }
 
 window.addEventListener('DOMContentLoaded', fetchContacts);
 
-
-
-//filter-contact-table-start
-const contactInput = document.getElementById("searchContact");
-const contactType = document.getElementById("contactOptions");
-const contactTable = document.getElementById("contact-table");
-const contactForm = document.querySelector("#contactForm");
-
+// 🔍 Filter Contacts
 contactForm.addEventListener("submit", function (e) {
     e.preventDefault();
-
     const query = contactInput.value.trim().toLowerCase();
     const selectedColumn = contactType.value;
-
-    console.log(selectedColumn)
-
-    const rows = contactTable.querySelectorAll("tbody tr");
+    const rows = contactTbody.querySelectorAll("tr");
 
     rows.forEach((row) => {
         let valueToCheck = "";
@@ -54,198 +59,102 @@ contactForm.addEventListener("submit", function (e) {
             case "Phone":
                 valueToCheck = row.querySelector('[data-label="Phone"]').textContent;
                 break;
-            case "Email":
-                valueToCheck = row.querySelector('[data-label="Email"]').textContent;
-                break;
-            case "Job Title":
-                valueToCheck = row.querySelector('[data-label="Job Title"]').textContent;
-                break;
-            case "Workspace":
-                valueToCheck = row.querySelector('[data-label="Workspace"]').textContent;
-                break;
-            default:
-                valueToCheck = "";
         }
 
-        if (valueToCheck.toLowerCase().includes(query)) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
+        row.style.display = valueToCheck.toLowerCase().includes(query) ? "" : "none";
     });
 });
-//filter-contact-table-end
 
-//form-modal-start
-const addButton = document.getElementById('add-contact');
-const modal = document.getElementById('modal');
-const closeBtn = document.getElementById('close-modal');
-const addContact = document.getElementById('contact-form')
-const contactTbody = document.querySelector('#contact-table tbody')
-
-addButton.addEventListener('click', () => {
-    modal.style.display = 'flex';
-});
-
-closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-});
-
+// ➕ Add Modal Open/Close
+addButton.addEventListener('click', () => modal.style.display = 'flex');
+closeBtn.addEventListener('click', () => modal.style.display = 'none');
 window.addEventListener('click', (e) => {
-    if (e.target === modal) {
+    if (e.target === modal || e.target === editmodal) {
         modal.style.display = 'none';
+        editmodal.style.display = 'none';
     }
 });
+closeModalEdit.addEventListener('click', () => editmodal.style.display = 'none');
 
-addContact.addEventListener('submit', async function (e) {
+// ➕ Submit New Contact
+addContactForm.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const company = document.getElementById('companyContact').value
-    const name = document.getElementById('nameContact').value
-    const tags = document.getElementById('tagsContact').value
-    const phone = document.getElementById('phoneContact').value
-    const email = document.getElementById('emailContact').value
-    const job = document.getElementById('jobContact').value
-    const workspace = document.getElementById('workspaceContact').value
-
     const data = {
-        Name: name,
-        Tags: tags,
-        Phone: phone,
-        Email: email,
-        JobTitle: job,
-        Workspace: workspace
-    }
+        name: document.getElementById('nameContact').value,
+        phoneNumber: document.getElementById('phoneContact').value,
+        tags: document.getElementById('tagsContact').value.split(',').map(t => t.trim())
+    };
 
-
-    const row = document.createElement('tr')
-
-    const res = await fetch('https://6874d57add06792b9c95705b.mockapi.io/api/v1/Contact', {
+    const res = await fetch('http://localhost:3000/contacts', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(data)
     });
 
-    row.innerHTML = `
-                <td data-label="Company">${company}</td>
-                <td data-label="Names">${name}</td>
-                <td data-label="Tags">${tags}</td>
-                <td data-label="Phone">${phone}</td>
-                <td data-label="Email">${email}</td>
-                <td data-label="Job Title">${job}</td>
-                <td data-label="Workspace">${workspace}</td>
-                <td data-label="Actions"><button>Edit</button><button>Delete</button></td>
-    `
-    contactTbody.appendChild(row);
-    modal.style.display = 'none'
+    if (res.ok) {
+        modal.style.display = 'none';
+        addContactForm.reset();
+        fetchContacts();
+    }
+});
 
-
-    addContact.reset()
-})
-//form-modal-end
-
-//deleting row for contact-start
+// 🗑️ Delete Contact
 contactTbody.addEventListener('click', async function (e) {
     if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Delete') {
-        let row = e.target.closest('tr')
-        let id = row.getAttribute('data-id')
-        if (confirm('are you sure you want to delete')) {
-            await fetch(`https://6874d57add06792b9c95705b.mockapi.io/api/v1/Contact/${id}`, {
-                method: 'DELETE'
+        const row = e.target.closest('tr');
+        const id = row.getAttribute('data-id');
+
+        if (confirm('Are you sure you want to delete this contact?')) {
+            await fetch(`http://localhost:3000/contacts/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
             });
-            row.remove()
+
+            row.remove();
         }
     }
-})
-//deleting row for contact-end
+});
 
-//editing row for contact-start
-const editmodal = document.getElementById('editmodal');
-const closeModalEdit = document.getElementById('close-modalEdit');
-const editBtn = document.getElementById('editContact')
-
+// ✏️ Edit Contact
 contactTbody.addEventListener('click', function (e) {
     if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Edit') {
-        let row = e.target.closest('tr')
-        let id = row.getAttribute('data-id')
-        console.log(row)
+        const row = e.target.closest('tr');
+        const id = row.getAttribute('data-id');
 
-        const company = row.querySelector('[data-label = "Company"]').textContent
-        const name = row.querySelector('[data-label = "Names"]').textContent
-        const tags = row.querySelector('[data-label = "Tags"]').textContent
-        const phone = row.querySelector('[data-label = "Phone"]').textContent
-        const email = row.querySelector('[data-label = "Email"]').textContent
-        const job = row.querySelector('[data-label = "Job Title"]').textContent
-        const workspace = row.querySelector('[data-label = "Workspace"]').textContent
-
-        console.log(job)
-
-        document.getElementById('companyContactEdit').value = company
-        document.getElementById('nameContactEdit').value = name
-        document.getElementById('tagsContactEdit').value = tags
-        document.getElementById('phoneContactEdit').value = phone
-        document.getElementById('emailContactEdit').value = email
-        document.getElementById('jobContactEdit').value = job
-        document.getElementById('workspaceContactEdit').value = workspace
+        document.getElementById('nameContactEdit').value = row.querySelector('[data-label="Names"]').textContent;
+        document.getElementById('phoneContactEdit').value = row.querySelector('[data-label="Phone"]').textContent;
+        document.getElementById('tagsContactEdit').value = row.querySelector('[data-label="Tags"]').textContent;
 
         editmodal.style.display = 'flex';
 
-        editBtn.addEventListener('click', async function (e) {
-            e.preventDefault()
+        editBtn.onclick = async function (e) {
+            e.preventDefault();
 
-            const company = document.getElementById('companyContactEdit').value
-            const name = document.getElementById('nameContactEdit').value
-            const tags = document.getElementById('tagsContactEdit').value
-            const phone = document.getElementById('phoneContactEdit').value
-            const email = document.getElementById('emailContactEdit').value
-            const job = document.getElementById('jobContactEdit').value
-            const workspace = document.getElementById('workspaceContactEdit').value
+            const updatedData = {
+                name: document.getElementById('nameContactEdit').value,
+                phoneNumber: document.getElementById('phoneContactEdit').value,
+                tags: document.getElementById('tagsContactEdit').value.split(',').map(t => t.trim())
+            };
 
-            console.log(company)
-
-            const data = {
-                Name: name,
-                Tags: tags,
-                Phone: phone,
-                Email: email,
-                JobTitle: job,
-                Workspace: workspace,
-                Avatar : ''
-            }
-
-            row.innerHTML = `
-                <td data-label="Company">${company}</td>
-                <td data-label="Names">${name}</td>
-                <td data-label="Tags">${tags}</td>
-                <td data-label="Phone">${phone}</td>
-                <td data-label="Email">${email}</td>
-                <td data-label="Job Title">${job}</td>
-                <td data-label="Workspace">${workspace}</td>
-                <td data-label="Actions"><button>Edit</button><button>Delete</button></td>
-            `
-
-            editmodal.style.display = 'none'
-
-            await fetch(`https://6874d57add06792b9c95705b.mockapi.io/api/v1/Contact/${id}`, {
+            const res = await fetch(`http://localhost:3000/contacts/${id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify(data)
-            })
-        })
-    }
-})
+                body: JSON.stringify(updatedData)
+            });
 
-window.addEventListener('click', (e) => {
-    if (e.target === editmodal) {
-        editmodal.style.display = 'none';
+            if (res.ok) {
+                editmodal.style.display = 'none';
+                fetchContacts();
+            }
+        };
     }
 });
-
-closeModalEdit.addEventListener('click', () => {
-    editmodal.style.display = 'none';
-});
-//editing row for contact-end
