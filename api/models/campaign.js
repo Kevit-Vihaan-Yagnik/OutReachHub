@@ -16,8 +16,13 @@ const campaignSchema = mongoose.Schema({
         enum: ["Draft", "Running", "Completed"],
         default: "Draft",
     },
+    messageTemplate: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "MessageTemplate",
+        required: true
+    },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
 })
 
-module.exports = mongoose.model('Campaign' , campaignSchema);
+module.exports = mongoose.model('Campaign', campaignSchema);

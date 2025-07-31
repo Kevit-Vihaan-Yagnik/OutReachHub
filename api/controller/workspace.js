@@ -120,13 +120,11 @@ exports.addMembers = async (req, res) => {
         const adminId = req.userData.adminId;
         const userId = req.userData.userId;
 
-        // Fetch workspace
         const workspace = await Workspace.findById(workspaceId);
         if (!workspace) {
             return res.status(404).json({ message: "Workspace not found" });
         }
 
-        // Check if request is authorized
         let isAuthorized = false;
 
         if (adminId) {
@@ -141,7 +139,6 @@ exports.addMembers = async (req, res) => {
             return res.status(403).json({ message: "Not authorized to add members" });
         }
 
-        // Filter out users that are already in the workspace
         const existingUserIds = workspace.members.map(m => m.user_id.toString());
         const newMembers = members.filter(mem => !existingUserIds.includes(mem.user_id));
 
@@ -149,22 +146,22 @@ exports.addMembers = async (req, res) => {
             return res.status(200).json({ message: "All members already exist in workspace" });
         }
 
-        // Add new members to workspace and update users
         for (const mem of newMembers) {
             workspace.members.push({
                 user_id: mem.user_id,
-                permissions: mem.permissions || { write: false, allowAdd: false },
+                permissions: {
+                    write : mem.permissions.write,
+                    allowAdd : mem.permissions.allowAdd 
+                },
                 addDate: new Date()
             });
 
-            // Add workspace to the user's workspaces array if not already present
             await Users.updateOne(
                 { _id: mem.user_id, workspaces: { $ne: workspaceId } },
                 { $push: { workspaces: workspaceId } }
             );
         }
 
-        // Update member count
         workspace.memCount = workspace.members.length;
         await workspace.save();
 
@@ -178,6 +175,62 @@ exports.addMembers = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+exports.editMembers = async (req, res) => {
+    try {
+        const { workspaceId } = req.params;
+        const { members } = req.body;
+
+        const adminId = req.userData.adminId;
+        const userId = req.userData.userId;
+
+        const workspace = await Workspace.findById(workspaceId);
+        if (!workspace) {
+            return res.status(404).json({ message: "Workspace not found" });
+        }
+
+        let isAuthorized = false;
+
+        if (adminId) {
+            const admin = await Admin.findById(adminId);
+            isAuthorized = !!admin;
+        } else if (userId) {
+            const member = workspace.members.find(m => m.user_id.toString() === userId);
+            isAuthorized = member && member.permissions.allowAdd;
+        }
+
+        if (!isAuthorized) {
+            return res.status(403).json({ message: "Not authorized to edit members" });
+        }
+
+        let updatedMembers = [];
+
+        for (const mem of members) {
+            const memberIndex = workspace.members.findIndex(m => m.user_id.toString() === mem.user_id);
+            if (memberIndex !== -1) {
+                workspace.members[memberIndex].permissions.write = mem.permissions.write;
+                workspace.members[memberIndex].permissions.allowAdd = mem.permissions.allowAdd;
+                updatedMembers.push(mem.user_id);
+            }
+        }
+
+        if (updatedMembers.length === 0) {
+            return res.status(404).json({ message: "No matching members found to update" });
+        }
+
+        await workspace.save();
+
+        return res.status(200).json({
+            message: "Members updated successfully",
+            updatedMembers
+        });
+
+    } catch (err) {
+        console.error("Edit members error:", err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 
 
 exports.deleteWorkspace = async (req, res) => {

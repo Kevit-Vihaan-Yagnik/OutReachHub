@@ -9,6 +9,7 @@ router.get('/:workspaceId' , auth, WorkspaceController.getWorkspaceById)
 router.put('/:workspaceId' , auth , WorkspaceController.editWorkspace)
 router.delete('/:workspaceId' , auth , WorkspaceController.deleteWorkspace)
 router.post('/addMembers/:workspaceId' , auth , WorkspaceController.addMembers);
+router.post('/editMembers/:workspaceId' , auth , WorkspaceController.editMembers );
 router.delete('/removeMembers/:workspaceId' , auth , WorkspaceController.removeMembers)
 router.post('/addTags/:workspaceId' , auth , WorkspaceController.addTags)
 router.delete('/removeTags/:workspaceId' , auth , WorkspaceController.deleteTags)

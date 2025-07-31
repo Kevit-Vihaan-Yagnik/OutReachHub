@@ -7,13 +7,12 @@ const messageTemplateSchema = mongoose.Schema({
         ref: "Workspace",
         required: true,
     },
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     type: { type: String, enum: ["text", "text-image"], default: "text" },
     title: { type: String, required: true },
-    campaignImage: {
+    templateImage: {
         type: String,
     },
     template: { type: String, required: true },
 })
 
-model.exports = mongoose.model('MessageTemplate' , messageTemplateSchema);
+module.exports = mongoose.model('MessageTemplate' , messageTemplateSchema);

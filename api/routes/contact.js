@@ -3,9 +3,13 @@ const router = express.Router();
 const auth = require('../auth');
 const ContactController = require('../controller/contacts')
 
-router.get('/workspace/:workspaceId', ContactController.getContactsByWorkspace);
+router.get('/userContact', auth , ContactController.userContact);
 
-router.post('/workspace/:workspaceId', auth, ContactController.createContacts);
+router.get('/filterByTags/:workspaceId' , auth , ContactController.filterByTags);
+
+router.get('/:workspaceId', auth , ContactController.getContactsByWorkspace);
+
+router.post('/:workspaceId', auth, ContactController.createContacts);
 
 router.delete('/:contactId', auth, ContactController.deleteContact);
 

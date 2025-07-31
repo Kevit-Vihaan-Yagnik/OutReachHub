@@ -8,6 +8,9 @@ require('dotenv').config({debug:true});
 const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin')
 const workspaceRoutes =require('./routes/workspace')
+const contactRoutes = require('./routes/contact')
+const messageTemplateRoutes = require('./routes/messageTemplate')
+const campaignRoutes = require("./routes/campaign")
 mongoose.connect(process.env.mango_URL)
     
 mongoose.Promise = global.Promise;
@@ -15,11 +18,6 @@ mongoose.Promise = global.Promise;
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use(express.json())
-
-app.use("/user" , userRoutes);
-app.use("/admin" , adminRoutes);
-app.use("/workspace" , workspaceRoutes);
-
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", '*');
@@ -33,6 +31,13 @@ app.use((req, res, next) => {
     }
     next()  
 })
+
+app.use("/user" , userRoutes);
+app.use("/admin" , adminRoutes);
+app.use("/workspace" , workspaceRoutes);
+app.use("/contacts", contactRoutes);
+app.use("/messageTemplate" , messageTemplateRoutes);
+app.use("/campaign" , campaignRoutes);
 
 
 module.exports = app;
