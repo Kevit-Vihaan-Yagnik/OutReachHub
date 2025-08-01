@@ -1,0 +1,55 @@
+import { signIn } from './auth'
+import './style.css'
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In</title>
+  <link rel="stylesheet" href="./auth/style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="col">
+      <div class="row">
+        <div class="hero">
+          <div class="small">Welcome back</div>
+          <div class="big">Sign In to Continue</div>
+          <div class="small">
+            Don't have an account?
+            <a href="./auth/signup.html">Register</a>
+          </div>
+        </div>
+      </div>
+      <form action="POST" id="loginForm">
+        <div class="row">
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" placeholder="abcd" required/>
+        </div>
+        <div class="row">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" placeholder="okok" required/>
+        </div>
+        <div class="row">
+          <button class="big" id="loginSubmit" type="submit">Login</button>
+        </div>
+      </form>
+    </div>
+    <div class="col">
+      <img class="img" src="/src/signin.png" alt="Sign in graphic" />
+    </div>
+  </div>
+</body>
+
+</html>
+`
+
+const form = document.getElementById('loginForm') as HTMLFormElement;
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  await signIn(form);
+});
